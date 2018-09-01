@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+<head th:replace="base::baseHead('Block')"></head>
+
+<body>
+
+<header th:replace="base::baseNav"></header>
+
+<div id="page-content" class="archive-page">
+    <div class="container">
+        <div class="row">
+            <div th:if="${dataFlag}"  id="main-content" class="col-md-9">
+                <article target="_blank"rticle th:each="i:${pageBean.items}">
+                    <a target="_blank" th:href="@{'/play/'+${i.id}}"><h2 class="vid-name" th:text="${i.title}"></h2></a>
+                    <h5 >By <a target="_blank" style="color: dodgerblue" th:href="@{'/user/info/'+${i.publisher.username}}" th:text="${i.publisher.nickname}"></a></h5>
+                    <div class="info pull-right">
+                        <span><i class="fa fa-calendar"></i><span
+                            th:text="${#dates.format(i.date,'yyyy-MM-dd HH:mm:ss')}"></span></span>
+                        <span><i class="fa fa-heart"></i><span th:text="${i.goods}"></span></span>
+                        <span><i class="glyphicon glyphicon-play-circle" aria-hidden="true"></i><span
+                                th:text="${i.times}"></span></span>
+                        <span id="do-collect">
+                        <i class="glyphicon glyphicon-tag" aria-hidden="true"></i>
+                        <span th:text="${i.collectNum}"></span>
+                        </span>
+                        <span><i class="glyphicon glyphicon-comment" aria-hidden="true"></i>
+                        <span id="commentView" th:text="${i.commentNum}"></span></span>
+                    </div><br>
+                    <div class="wrap-vid" style="clear: both">
+                        <div class="zoom-container">
+                            <div class="zoom-caption">
+                                <span th:text="${i.type}"></span>
+                                <a target="_blank" th:href="@{'/play/'+${i.id}}">
+                                    <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                                </a>
+                                <p th:text="${i.title}"></p>
+                            </div>
+                            <img th:src="${i.preview}">
+                        </div>
+                        <p th:text="${i.introduction}"> </p>
+                        <a target="_blank" th:href="@{'/play/'+${i.id}}">MORE...</a>
+                    </div>
+                    <br><br>
+                    <div class="line" style="clear: both;"></div>
+                </article>
+                <center>
+                    <ul class="pagination">
+                        <li th:if="${pageBean.currentPage!=1}"><a target="_blank" th:href="@{${tarUrl}+'/1'}" ><span aria-hidden='true'>首页</span></a></li>
+                        <li th:if="${pageBean.isLess}"> <a target="_blank" th:href="@{${tarUrl}+'/'+${(pageBean.currentPage - 1)}}" data-page='"+(Number(page)-1)+"' aria-label='Previous'> <span aria-hidden='true'>«</span> </a> </li>
+
+                        <li th:each="i:${#numbers.sequence(pageBean.startIndex,pageBean.endIndex)}">
+                            <a target="_blank" th:if="${i!=pageBean.currentPage}" th:href="@{${tarUrl}+'/'+${i}}" th:text="${i}"></a>
+                            <span th:if="${i eq pageBean.currentPage}" th:text="${i}"></span>
+                        </li>
+
+                        <li th:if="${pageBean.isMore}"> <a target="_blank" th:href="@{${tarUrl}+'/'+${(pageBean.currentPage + 1)}}"  data-page='"+(Number(page)+1)+"' aria-label='Next'> <span aria-hidden='true'>»</span> </a> </li>
+                        <li th:if="${pageBean.currentPage!=pageBean.totalPage}"><a target="_blank" th:href="@{${tarUrl}+'/'+${pageBean.totalPage}}"><span aria-hidden='true'>末页</span></a></li>
+                        <!--<li>-->
+                        <!--<a target="_blank" href="#" aria-label="Previous">-->
+                        <!--<span aria-hidden="true">«</span>-->
+                        <!--</a>-->
+                        <!--</li>-->
+                        <!--<li><a target="_blank" href="#">1</a></li>-->
+                        <!--<li><a target="_blank" href="#">2</a></li>-->
+                        <!--<li><a target="_blank" href="#">3</a></li>-->
+                        <!--<li><a target="_blank" href="#">4</a></li>-->
+                        <!--<li><a target="_blank" href="#">5</a></li>-->
+                        <!--<li>-->
+                        <!--<a target="_blank" href="#" aria-label="Next">-->
+                        <!--<span aria-hidden="true">»</span>-->
+                        <!--</a>-->
+                        <!--</li>-->
+                    </ul>
+                </center>
+            </div >
+
+            <div th:if="not ${dataFlag}"  id="main-content" class="col-md-9">
+                <center><h1 style="color: red">没有结果</h1></center>
+            </div>
+
+            <div th:replace="base::sidebar"></div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="base::baseFooter"></footer>
+
+</body>
+</html>

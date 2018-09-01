@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head th:fragment="baseHead(title)">
+
+    <meta name="_csrf" th:content="${_csrf.token}">
+
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title th:text="${title}+' - giligili (゜-゜)つロ 干杯~-'"></title>
+
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap-3.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <link href="/css/owl_002.css" rel="stylesheet">
+    <link href="/css/owl.css" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="/css/font-awesome.css">
+
+    <script src="/js/jquery-1.js"></script>
+    <script src="/js/jquery.js"></script>
+    <script src="/js/echo.js"></script>
+    <script src="/js/bootstrap.js"></script>
+
+</head>
+<body>
+
+
+<header th:fragment="baseNav">
+    <nav id="top">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <strong>Welcome to giligili (゜-゜)つロ 干杯~-!</strong>
+                </div>
+                <form id="logout-form" th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
+                    <div class="col-md-8 col-sm-8">
+                        <ul class="list-inline top-link link">
+                            <li><a target="_blank">
+                                <img id='nav-head' class="img-circle" th:src="${session.SPRING_SECURITY_CONTEXT.authentication.principal.avatar}" alt="头像"
+                                     style="border:2px solid #000000;width:40px;height: 40px"/>
+                            </a>
+                            </li>
+                            <li>
+                                <a target="_blank" th:href="@{/user/info}" sec:authentication="principal.nickname"></a>
+                            </li>
+                            <li>
+                                <a id="logout" href="javascript:;">Logout</a>
+                            </li>
+                            <li><a target="_blank" th:href="@{/follows}">我的关注</a>
+                            </li>
+                            <li><a target="_blank" th:href="@{/followed}">关注我的</a>
+                            </li>
+                            <li><a target="_blank" th:href="@{/upload}">发表</a>
+                            </li>
+                            <li><a target="_blank" th:href="@{/myVideo}">我的视频</a>
+                            </li>
+                            <li><a target="_blank" th:href="@{/myCollect}">我的收藏</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+
+                <div class="col-md-8 col-sm-8" sec:authorize="not isAuthenticated()">
+                    <ul class="list-inline top-link link">
+                        <li><a target="_blank" th:href="@{/login}">Login</a></li>
+                        <li><a target="_blank" th:href="@{/register}">Register</a></li>
+
+                    </ul>
+                </div>
+
+                <script>
+                    $(document).ready(function () {
+                        $("#logout").click(function () {
+                            $("#logout-form").submit();
+                        });
+                    });
+                </script>
+            </div>
+        </div>
+    </nav>
+
+    <nav id="menu" class="navbar">
+        <div class="container">
+            <div class="navbar-header"><span id="heading" class="visible-xs">Categories</span>
+                <button type="button" class="btn btn-navbar navbar-toggle" data-toggle="collapse"
+                        data-target=".navbar-ex1-collapse"><i class="fa fa-bars"></i></button>
+            </div>
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav">
+                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/index.html"><i
+                            class="fa fa-home"></i> Home</a></li>
+                    <li class="dropdown"><a target="_blank" href="#" class="dropdown-toggle" data-toggle="dropdown"><i
+                            class="fa fa-user"></i> Account</a>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-inner">
+                                <ul class="list-unstyled">
+                                    <li><a target="_blank" th:href="@{/login}">Login</a>
+                                    </li>
+                                    <li><a target="_blank" th:href="@{/register}">Register</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="dropdown"><a target="_blank" href="#" class="dropdown-toggle" data-toggle="dropdown"><i
+                            class="fa fa-play-circle-o"></i> Video</a>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-inner">
+                                <ul class="list-unstyled">
+                                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/archive.html">Text
+                                        201</a></li>
+                                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/archive.html">Text
+                                        202</a></li>
+                                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/archive.html">Text
+                                        203</a></li>
+                                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/archive.html">Text
+                                        204</a></li>
+                                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/archive.html">Text
+                                        205</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="dropdown"><a target="_blank" href="#" class="dropdown-toggle" data-toggle="dropdown"><i
+                            class="fa fa-list"></i> Category</a>
+                        <div class="dropdown-menu" style="margin-left: -203.625px;">
+                            <div class="dropdown-inner">
+                                <ul class="list-unstyled">
+                                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/archive.html">Text
+                                        301</a></li>
+                                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/archive.html">Text
+                                        302</a></li>
+                                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/archive.html">Text
+                                        303</a></li>
+                                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/archive.html">Text
+                                        304</a></li>
+                                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/archive.html">Text
+                                        305</a></li>
+                                </ul>
+                                <ul class="list-unstyled">
+                                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/archive.html">Text
+                                        306</a></li>
+                                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/archive.html">Text
+                                        307</a></li>
+                                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/archive.html">Text
+                                        308</a></li>
+                                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/archive.html">Text
+                                        309</a></li>
+                                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/archive.html">Text
+                                        310</a></li>
+                                </ul>
+                                <ul class="list-unstyled">
+                                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/archive.html">Text
+                                        311</a></li>
+                                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/archive.html">Text
+                                        312</a></li>
+                                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/archive.html#">Text
+                                        313</a></li>
+                                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/archive.html#">Text
+                                        314</a></li>
+                                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/archive.html">Text
+                                        315</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                    <li><a target="_blank" href="javascript:;"><i
+                            class="fa fa-cubes"></i> VIP</a></li>
+                    <li><a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/contact.html"><i
+                            class="fa fa-envelope"></i> Contact</a></li>
+                </ul>
+
+                <form id="search-form" class="navbar-form navbar-right" style="height: 36px;margin-top: -10px;" action="">
+                    <input id="search-input" placeholder="Search..." style="height: 36px;" required="">
+                </form>
+            </div>
+        </div>
+    </nav>
+    <script>
+        $("#search-form").submit(function () {
+            $("#search-form").attr("action","/search/"+$('#search-input').val()+"/1");
+        });
+    </script>
+    <div class="header-slide">
+        <div id="owl-demo" class="owl-carousel owl-theme" style="opacity: 1; display: block;" >
+            <div class="owl-item" style="width: 382px;" th:each="video:${videoAllList}">
+                <div class="item">
+                    <div class="zoom-container">
+                        <div class="zoom-caption">
+                            <span th:text="${video.type}"></span>
+                            <a target="_blank" th:href="@{'/play/'+${video.id}}">
+                                <i class="fa fa-play-circle-o    fa-5x" style="color: #fff"></i>
+                            </a>
+                            <p th:text="${video.title}"></p>
+                        </div>
+                        <img th:src="${video.preview}">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div  th:fragment="sidebar" id="sidebar" class="col-md-3">
+
+    <div class="widget wid-follow">
+        <div class="heading"><h4><i class="fa fa-users"></i> Follow Us</h4></div>
+        <div class="content">
+            <ul class="list-inline">
+                <li>
+                    <a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/facebook.com/">
+                        <div class="box-facebook">
+                            <span class="fa fa-facebook fa-2x icon"></span>
+                            <span>1250</span>
+                            <span>Fans</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/facebook.com/">
+                        <div class="box-twitter">
+                            <span class="fa fa-twitter fa-2x icon"></span>
+                            <span>1250</span>
+                            <span>Fans</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/facebook.com/">
+                        <div class="box-google">
+                            <span class="fa fa-google-plus fa-2x icon"></span>
+                            <span>1250</span>
+                            <span>Fans</span>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+            <img src="/img/banner.jpg">
+        </div>
+        <div class="line"></div>
+    </div>
+
+    <div class="widget wid-tags">
+        <div class="heading"><h4><i class="fa fa-tags"></i> Tag</h4></div>
+        <div class="content">
+            <ul class="list-inline">
+                <li><a target="_blank" href="#">animals ,</a></li>
+                <li><a target="_blank" href="#">cooking ,</a></li>
+                <li><a target="_blank" href="#">countries ,</a></li>
+                <li><a target="_blank" href="#">home ,</a></li>
+                <li><a target="_blank" href="#">likes ,</a></li>
+                <li><a target="_blank" href="#">photo ,</a></li>
+                <li><a target="_blank" href="#">travel ,</a></li>
+                <li><a target="_blank" href="#">video</a></li>
+            </ul>
+        </div>
+        <div class="line"></div>
+    </div>
+
+    <div class="widget wid-post">
+        <div class="heading"><h4><i class="fa fa-globe"></i> Category</h4></div>
+        <div class="content">
+            <div class="post wrap-vid">
+                <div class="zoom-container">
+                    <div class="zoom-caption">
+                        <span>Video's Tag</span>
+                        <a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/single.html">
+                            <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                        </a>
+                        <p>Video's Name</p>
+                    </div>
+                    <img src="/img/7.jpg">
+                </div>
+                <div class="wrapper">
+                    <h5 class="vid-name"><a target="_blank" href="#">Video's Name</a></h5>
+                    <div class="info">
+                        <h6>By <a target="_blank" href="#">Kelvin</a></h6>
+                        <span><i class="fa fa-calendar"></i>25/3/2015</span>
+                        <span><i class="fa fa-heart"></i>1,200</span>
+                    </div>
+                </div>
+            </div>
+            <div class="post wrap-vid">
+                <div class="zoom-container">
+                    <div class="zoom-caption">
+                        <span>Video's Tag</span>
+                        <a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/single.html">
+                            <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                        </a>
+                        <p>Video's Name</p>
+                    </div>
+                    <img src="/img/8.jpg">
+                </div>
+                <div class="wrapper">
+                    <h5 class="vid-name"><a target="_blank" href="#">Video's Name</a></h5>
+                    <div class="info">
+                        <h6>By <a target="_blank" href="#">Kelvin</a></h6>
+                        <span><i class="fa fa-calendar"></i>25/3/2015</span>
+                        <span><i class="fa fa-heart"></i>1,200</span>
+                    </div>
+                </div>
+            </div>
+            <div class="post wrap-vid">
+                <div class="zoom-container">
+                    <div class="zoom-caption">
+                        <span>Video's Tag</span>
+                        <a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/single.html">
+                            <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                        </a>
+                        <p>Video's Name</p>
+                    </div>
+                    <img src="/img/9.jpg">
+                </div>
+                <div class="wrapper">
+                    <h5 class="vid-name"><a target="_blank" href="#">Video's Name</a></h5>
+                    <div class="info">
+                        <h6>By <a target="_blank" href="#">Kelvin</a></h6>
+                        <span><i class="fa fa-calendar"></i>25/3/2015</span>
+                        <span><i class="fa fa-heart"></i>1,200</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="line"></div>
+    </div>
+
+    <div class="widget wid-news">
+        <div class="heading"><h4><i class="fa fa-clock-o"></i> Top News</h4></div>
+        <div class="content">
+            <div class="wrap-vid" th:each="video:${videoDateList}">
+                <div class="zoom-container">
+                    <div class="zoom-caption">
+                        <span th:text="${video.type}"></span>
+                        <a target="_blank" th:href="@{'/play/'+${video.id}}">
+                            <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                        </a>
+                        <p th:text="${video.title}"></p>
+                    </div>
+                    <img th:src="${video.preview}">
+                </div>
+                <h3 class="vid-name"><a target="_blank" href="#" th:text="${video.title}"></a></h3>
+                <div class="info">
+                    <h5>By <a target="_blank" href="#" th:text="${video.publisher.nickname}"></a></h5>
+                    <span><i class="fa fa-calendar"></i><span style="display: inline" th:text="${#dates.format(video.date,'yyyy-MM-dd HH:mm:ss')}"></span></span>
+                    <span><i class="fa fa-heart"></i><span style="display: inline" th:text="${video.goods}"></span> </span>
+                </div>
+            </div>
+        </div>
+        <div class="line"></div>
+    </div>
+
+    <div class="widget wid-post">
+        <div class="heading"><h4><i class="fa fa-comments"></i> Comment</h4></div>
+        <div class="content">
+            <div class="post">
+                <a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/single.html">
+                    <img src="/img/user.png">
+                </a>
+                <div class="wrapper">
+                    <a target="_blank" href="#"><h5>Curabitur tincidunt porta lorem.</h5></a>
+                    <ul class="list-inline">
+                        <li><i class="fa fa-calendar"></i>25/3/2015</li>
+                        <li><i class="fa fa-comments"></i>1,200</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="post">
+                <a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/single.html">
+                    <img src="/img/user.png">
+                </a>
+                <div class="wrapper">
+                    <a target="_blank" href="#"><h5>Curabitur tincidunt porta lorem.</h5></a>
+                    <ul class="list-inline">
+                        <li><i class="fa fa-calendar"></i>25/3/2015</li>
+                        <li><i class="fa fa-comments"></i>1,200</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="post">
+                <a target="_blank" href="http://www.jq22.com/demo/jQueryvideomoban201702190044/single.html">
+                    <img src="/img/user.png">
+                </a>
+                <div class="wrapper">
+                    <a target="_blank" href="#"><h5>Curabitur tincidunt porta lorem.</h5></a>
+                    <ul class="list-inline">
+                        <li><i class="fa fa-calendar"></i>25/3/2015</li>
+                        <li><i class="fa fa-comments"></i>1,200</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="line"></div>
+    </div>
+    <div class="widget wid-banner">
+        <img src="/img/banner-2.jpg">
+    </div>
+</div>
+
+
+<footer th:fragment="baseFooter">
+    <div class="top-footer">
+        <ul class="footer-social list-inline">
+            <li><a target="_blank" href="#"><i class="fa fa-twitter"></i> <span>Twitter</span></a></li>
+            <li><a target="_blank" href="#"><i class="fa fa-facebook"></i> <span>Facebook</span></a></li>
+            <li><a target="_blank" href="#"><i class="fa fa-google-plus"></i> <span>Google+</span></a></li>
+            <li><a target="_blank" href="#"><i class="fa fa-youtube"></i> <span>Video's Tag</span></a></li>
+            <li><a target="_blank" href="#"><i class="fa fa-vimeo-square"></i> <span>Vimeo</span></a></li>
+            <li><a target="_blank" href="#"><i class="fa fa-pinterest"></i> <span>Pinterest</span></a></li>
+            <li><a target="_blank" href="#"><i class="fa fa-rss"></i> <span>Rss</span></a></li>
+        </ul>
+    </div>
+    <div class="wrap-footer">
+        <div class="container">
+            <div class="row">
+                <a target="_blank"side class="col-footer col-md-3">
+                    <h2 class="footer-title">About Us</h2>
+                    <div class="textwidget">Aenean feugiat in ante et blandit. Vestibulum
+                        posuere molestie risus, ac interdum magna porta non. Pellentesque rutrum
+                        fringilla elementum. Curabitur tincidunt porta lorem vitae accumsan. <br> <br>
+                        Aenean feugiat in ante et blandit. Vestibulum posuere molestie risus, ac
+                        interdum magna porta non. Pellentesque rutrum fringilla elementum.
+                        Curabitur tincidunt porta lorem vitae accumsan.
+                    </div>
+                </aside>
+                <a target="_blank"side class="col-footer col-md-3 widget_recent_entries">
+                    <h2 class="footer-title">Recent Posts</h2>
+                    <ul>
+                        <li><a target="_blank" href="#">MOST VISITED COUNTRIES</a></li>
+                        <li><a target="_blank" href="#">5 PLACES THAT MAKE A GREAT HOLIDAY</a></li>
+                        <li><a target="_blank" href="#">PEBBLE TIME STEEL IS ON TRACK TO SHIP IN JULY</a></li>
+                        <li><a target="_blank" href="#">STARTUP COMPANY’S CO-FOUNDER TALKS ON HIS NEW PRODUCT</a></li>
+                    </ul>
+                </aside>
+                <a target="_blank"side class="col-footer col-md-3">
+                    <h2 class="footer-title">NEWS LETTER</h2>
+                    If you want to receive our latest news send directly to your email,
+                    please leave your email address bellow. Subscription is free and you can
+                    cancel anytime.
+                    <form action="#" method="post">
+                        <input name="your-name" size="40" placeholder="Your Email" type="text">
+                        <input value="SUBSCRIBE" class="btn btn-3" type="submit">
+                    </form>
+                </aside>
+                <a target="_blank"side class="col-footer col-md-3 wptt_TwitterTweets">
+                    <h2 class="footer-title">Twitter</h2>
+                    <ul class="fetched_tweets light">
+                        <li class="tweets_avatar">
+                            <div class="tweet_wrap">
+                                <div class="wdtf-user-card ltr">
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="tweet_data"> Check out 'NewsTube - Magazine Blog &amp; Video' on
+                                    <a target="_blank"
+                                        href="#"
+
+                                        rel="nofollow">#EnvatoMarket</a>
+                                    <a target="_blank" href="#"  rel="nofollow">#themeforest</a></div>
+                                <br>
+                                <div class="clear"></div>
+                                <div class="times"><em> <a target="_blank" href="#" 
+                                                           title="Follow cactusthemes on Twitter [Opens new window]">
+                                    2
+                                    months ago </a> </em></div>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="clear"></div>
+                        </li>
+                        <li class="tweets_avatar">
+                            <div class="tweet_wrap">
+                                <div class="wdtf-user-card ltr">
+                                    <div class="clear"></div>
+                                </div>
+                                <div class="tweet_data"> Our latest theme 'Nano - Simple Magazine WordPress Theme'
+                                    on <a target="_blank"
+                                            href="#"  rel="nofollow">#EnvatoMarket</a></div>
+                                <br>
+                                <div class="clear"></div>
+                                <div class="times"><em> <a target="_blank" href="#" 
+                                                           title="Follow cactusthemes on Twitter [Opens new window]">
+                                    5
+                                    months ago </a> </em></div>
+                                <div class="clear"></div>
+                            </div>
+                            <div class="clear"></div>
+                        </li>
+                    </ul>
+                </aside>
+            </div>
+        </div>
+    </div>
+    <div class="bottom-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-sm-6 copyright">
+                    <span>Copyright © 2015.Company name All rights reserved.</span>
+                </div>
+                <div class="col-md-6 col-sm-6 link">
+                    <div class="menu-footer-menu-container">
+                        <ul id="menu-footer-menu" class="menu list-inline">
+                            <li><a target="_blank" href="#"><i class="fa fa-home"></i> Home</a></li>
+                            <li><a target="_blank" href="#"><i class="fa fa-comments"></i> Contact</a></li>
+                            <li><a target="_blank" href="#"><i class="fa fa-question-circle"></i> FAQ</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/owl.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            $(document).ajaxSend(function (e, xhr, options) {
+                xhr.setRequestHeader(header, token);
+            });
+
+            $("#owl-demo").owlCarousel({
+                autoPlay: 3000,
+                items: 5,
+                itemsDesktop: [1199, 4],
+                itemsDesktopSmall: [979, 4]
+            });
+
+
+            Echo.init({
+                offset: 100,//离可视区域多少像素的图片可以被加载
+                throttle: 0 //图片延时多少毫秒加载
+            });
+
+        });
+    </script>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="eleven.lc.gigi.dao.VideoDao">
+
+    <resultMap id="VideoMap" type="eleven.lc.gigi.entity.Video">
+        <id property="id" column="id" />
+        <result property="collectNum" column="collectNum" />
+        <result property="commentNum" column="commentNum" />
+        <result property="content" column="content" />
+        <result property="date" column="date" />
+        <result property="goods" column="goods" />
+        <result property="introduction" column="introduction" />
+        <result property="preview" column="preview" />
+        <result property="state" column="state" />
+        <result property="tags" column="tags" />
+        <result property="times" column="times" />
+        <result property="title" column="title" />
+        <result property="type" column="type" />
+
+        <association property="publisher"  fetchType="lazy"   column="userId" select="eleven.lc.gigi.dao.UserDao.selectById"></association>
+        
+        <collection property="danmus"   fetchType="lazy"   column="id" select="eleven.lc.gigi.dao.DanmuDao.selectVideoDanmu"></collection>
+
+        <collection property="comments"  fetchType="lazy"   column="id"  select="eleven.lc.gigi.dao.CommentDao.selectVideoComment"></collection>
+
+    </resultMap>
+
+    <select id="selectLikeTitle" parameterType="String" resultMap="VideoMap">
+        SELECT * FROM video WHERE title LIKE CONCAT('%',#{data},'%')
+    </select>
+    
+    <select id="selectLikeTag" parameterType="String" resultMap="VideoMap">
+        SELECT * FROM video WHERE tags LIKE CONCAT('%',#{data},'%')
+    </select>
+
+    <select id="selectLikeType" parameterType="String" resultMap="VideoMap">
+        SELECT * FROM video WHERE type LIKE CONCAT('%',#{data},'%')
+    </select>
+
+    <select id="selectAll" resultMap="VideoMap">
+        select * from video LIMIT 25
+    </select>
+
+    <select id="selectOrderByDate" resultMap="VideoMap">
+        select * from video order by `date` desc LIMIT 3
+    </select>
+
+    <select id="selectRandom" resultMap="VideoMap">
+#         SELECT * FROM video
+#         WHERE id >= (SELECT floor(RAND() * (SELECT MAX(id) FROM video)))
+#         ORDER BY id LIMIT 6;
+      select * from video   order by rand() limit 6;
+    </select>
+
+    <!--代替热门-->
+    <select id="selectOrderByTimes" resultMap="VideoMap">
+        select * from video order by times desc LIMIT 5 ;
+    </select>
+
+    <!--代替精选-->
+    <select id="selectOrderByGoods" resultMap="VideoMap">
+        select * from video order by goods desc LIMIT 8;
+    </select>
+
+    <!--代替开头-->
+    <select id="selectOrderByCollectNum" resultMap="VideoMap">
+        select * from video order by collectNum desc LIMIT 5;
+    </select>
+
+    <select id="selectFromCollect" parameterType="Long" resultMap="VideoMap">
+        SELECT * FROM video where id IN (SELECT collect.videoId from collect where collect.userId=#{id})
+    </select>
+    
+    <select id="selectById" parameterType="Long" resultMap="VideoMap">
+        SELECT * FROM video WHERE id=#{id}
+    </select>
+
+    <select id="selectByIdNotDetail" parameterType="Long" resultType="eleven.lc.gigi.entity.Video">
+        SELECT * FROM video WHERE id=#{id}
+    </select>
+
+    <select id="selectUserVideo" parameterType="Long" resultMap="VideoMap">
+        SELECT * FROM video WHERE userId=#{id}
+    </select>
+    
+    <update id="updateTimes" parameterType="Long">
+        UPDATE video SET times=times+1 WHERE id=#{id}
+    </update>
+
+    <update id="updatePlusCollectNum" parameterType="Long">
+        UPDATE video SET collectNum=collectNum+1 WHERE id=#{id}
+    </update>
+
+    <update id="updateSubCollectNum" parameterType="Long">
+        UPDATE video SET collectNum=collectNum-1 WHERE id=#{id}
+    </update>
+
+    <update id="updatePlusCommentNum" parameterType="Long">
+        UPDATE video SET commentNum=commentNum+1 WHERE id=#{id}
+    </update>
+
+    <update id="updateSubCommentNum" parameterType="Long">
+        UPDATE video SET commentNum=commentNum-1 WHERE id=#{id}
+    </update>
+
+    <insert id="insertNewVideo" parameterType="eleven.lc.gigi.entity.Video">
+        INSERT INTO video(content,introduction,preview,tags,title,type,userId)
+                VALUES (#{content},#{introduction},#{preview},#{tags},#{title},#{type},${publisher.id})
+    </insert>
+</mapper>

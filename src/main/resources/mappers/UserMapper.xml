@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="eleven.lc.gigi.dao.UserDao">
+
+
+    <resultMap id="UserMap" type="eleven.lc.gigi.entity.User">
+        <id property="id" column="id"/>
+        <result property="avatar" column="avatar"/>
+        <result property="email" column="email"/>
+        <result property="exp" column="exp"/>
+        <result property="introduction" column="introduction"/>
+        <result property="level" column="level"/>
+        <result property="nickname" column="nickname"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="sex" column="sex"/>
+        <result property="vip" column="vip"/>
+        <!--一对多-->
+        <collection property="comments"  fetchType="lazy"   column="id"
+                    select="eleven.lc.gigi.dao.CommentDao.selectUserComment" ></collection>
+
+        <collection property="myVideoes"  fetchType="lazy"   column="id" select="eleven.lc.gigi.dao.VideoDao.selectUserVideo"></collection>
+
+        <!-- 多对多关联映射：collection -->
+        <collection property="collects" column="id" fetchType="lazy"  select="eleven.lc.gigi.dao.VideoDao.selectFromCollect"/>
+
+        <collection property="follows" column="id"  fetchType="lazy"   select="selectFollows">
+            <id property="id" column="id"/>
+            <result property="avatar" column="avatar"/>
+            <result property="email" column="email"/>
+            <result property="exp" column="exp"/>
+            <result property="introduction" column="introduction"/>
+            <result property="level" column="level"/>
+            <result property="nickname" column="nickname"/>
+            <result property="username" column="username"/>
+            <result property="password" column="password"/>
+            <result property="sex" column="sex"/>
+        </collection>
+
+        <collection property="followed"  fetchType="lazy"  column="id" select="selectFollowed">
+            <id property="id" column="id"/>
+            <result property="avatar" column="avatar"/>
+            <result property="email" column="email"/>
+            <result property="exp" column="exp"/>
+            <result property="introduction" column="introduction"/>
+            <result property="level" column="level"/>
+            <result property="nickname" column="nickname"/>
+            <result property="username" column="username"/>
+            <result property="password" column="password"/>
+            <result property="sex" column="sex"/>
+        </collection>
+
+
+    </resultMap>
+
+    <select id="selectAll" resultMap="UserMap">
+        SELECT *
+        FROM user
+    </select>
+
+    <select id="selectById" parameterType="Long" resultType="eleven.lc.gigi.entity.User">
+        SELECT *
+        FROM user
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectFollows" parameterType="Long" resultMap="UserMap">
+        SELECT *
+        FROM user
+        WHERE id IN (SELECT followId
+                     FROM follow
+                     WHERE userId = #{id})
+    </select>
+
+    <select id="selectFollowed" parameterType="Long" resultType="eleven.lc.gigi.entity.User">
+        SELECT *
+        FROM user
+        WHERE id IN (SELECT userId
+                     FROM follow
+                     WHERE followId = #{id})
+    </select>
+
+    <select id="selectByUsername" parameterType="eleven.lc.gigi.entity.User" resultMap="UserMap">
+        SELECT *
+        FROM user
+        WHERE username = #{username}
+    </select>
+
+    <select id="selectByEmail" parameterType="String" resultMap="UserMap">
+        SELECT *
+        FROM user
+        WHERE email = #{email}
+    </select>
+
+    <insert id="insertUser" parameterType="eleven.lc.gigi.entity.UserCheck">
+        INSERT INTO user (email, nickname, username, password)
+        VALUES (#{email}, #{nickname}, #{username}, #{password})
+    </insert>
+
+    <insert id="insertCollect" parameterType="Long">
+        INSERT INTO collect VALUES (#{param1}, #{param2});
+    </insert>
+
+    <delete id="deleteCollect" parameterType="Long">
+        DELETE FROM collect
+        WHERE userId = #{param1} AND videoId = #{param2}
+    </delete>
+
+    <insert id="insertFollow" parameterType="Long">
+        INSERT INTO follow VALUES (#{param1}, #{param2});
+    </insert>
+
+    <delete id="deleteFollow" parameterType="Long">
+        DELETE FROM follow
+        WHERE userId = #{param1} AND followId = #{param2}
+    </delete>
+
+    <update id="updateAvatar" parameterType="eleven.lc.gigi.entity.User">
+        UPDATE user
+        SET avatar = #{avatar}
+        WHERE id = #{id}
+    </update>
+    
+    <update id="updateVip" parameterType="Long">
+        UPDATE user SET vip=1 WHERE id = #{id};
+    </update>
+    
+    <update id="updateInfo" parameterType="eleven.lc.gigi.entity.User">
+        UPDATE user
+        <trim prefix="set" suffixOverrides=",">
+            <if test="nickname!=null and nickname!='' ">nickname=#{nickname},</if>
+            <if test="email!=null and email!='' ">email=#{email},</if>
+            <if test="sex!=null and sex!=''">sex=#{sex},</if>
+            <if test="introduction!=null and introduction!=''">introduction=#{introduction},</if>
+        </trim>
+        WHERE id=#{id}
+    </update>
+</mapper>

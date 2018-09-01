@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="base::baseHead('Vaildate')"></head>
+<body>
+
+<header th:replace="base::baseNav"></header>
+
+<div id="page-content" class="contact-page">
+    <div class="container">
+        <div class="row">
+            <div id="main-content" class="col-md-9">
+                <div class="box">
+                    <p th:if="not ${error}">
+                        恭喜您完成注册！！！，点击右上角登陆吧。
+                    </p>
+                    <p style="color: red" th:if="${error}" th:text="${error}"></p>
+                </div>
+            </div>
+            <div th:replace="base::sidebar"></div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="base::baseFooter"></footer>
+
+</body>
+</html>

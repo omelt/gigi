@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="base::baseHead('Follows')"></head>
+<body>
+
+<header th:replace="base::baseNav"></header>
+
+<div id="page-content" class="contact-page">
+    <div class="container">
+        <div class="row">
+            <div th:if="${#lists.size(session.SPRING_SECURITY_CONTEXT.authentication.principal.follows)>0}"
+                 id="main-content" class="col-md-9">
+                <a target="_blank"rticle th:each="i:${session.SPRING_SECURITY_CONTEXT.authentication.principal.follows}" >
+                    <span class="pull-left">
+                        <a target="_blank" th:href="@{'/user/info/'+${i.username}}"><h2 class="vid-name" th:text="${i.nickname}"></h2></a>
+                        <button id="follow-button" class="btn btn-default" style="color: black" th:data="${i.id}">取消关注</button>
+                    </span>
+                    <div class="info pull-right">
+                        <span>
+                            <span class="glyphicon glyphicon-sunglasses" aria-hidden="true"></span>
+                            <span th:text="${i.sex}"></span></span>
+                        <span><span class="glyphicon glyphicon-grain" aria-hidden="true"></span>
+                            Lv.<span th:text="${i.level}"></span></span>
+                        <span><span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span>
+                            Exp:<span th:text="${i.exp}"></span>/<span th:text="(${i.level}+1)*1000"></span></span>
+                    </div>
+                    <br>
+                    <div class="wrap-vid" style="clear: both">
+                        <div class="pull-left">
+                            <img alt="头像" style="width:60px;height:60px" class="normalFace img-thumbnail" th:src="${i.avatar}">
+                        </div>
+                        <div class="pull-left" style="padding-left: 20px">
+                            <p th:text="${i.introduction}"></p>
+                            <a target="_blank" th:href="@{'/user/info/'+${i.username}}">MORE...</a>
+                        </div>
+                    </div>
+                    <br><br>
+                    <div class="line" style="clear: both;"></div>
+                </article>
+            </div>
+            <div th:if="${#lists.size(session.SPRING_SECURITY_CONTEXT.authentication.principal.follows) eq 0}"
+                 id="main-content" class="col-md-9">
+                <center><h1 style="color: red">没有关注的人</h1></center>
+            </div>
+            <div th:replace="base::sidebar"></div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="base::baseFooter"></footer>
+<script>
+    $(document).ready(function () {
+        $("#follow-button").click(function () {
+            var followId = $(this).attr("data");
+            if ($(this).html() === "取消关注") {
+                $.post("/user/cancelFollow", {followId: followId}).done(function (res) {
+                    if (res === "ok") {
+                        $("#follow-button").html("关注");
+                        $("#follow-button").attr("class", "btn btn-info");
+                    }else if(res === "fail"){
+                        alert("取关失败");
+                    }
+                }).error(function () {
+                    alert("操作失败");
+                });
+            } else if ($(this).html() === "关注") {
+                $.post("/user/doFollow", {followId: followId}).done(function (res) {
+                    if (res === "ok") {
+                        $("#follow-button").html("取消关注");
+                        $("#follow-button").attr("class", "btn btn-default");
+                    }else if(res === "fail") {
+                        alert("关注失败");
+                    }
+                }).error(function () {
+                    alert("操作失败");
+                });
+            }
+        });
+    });
+
+</script>
+</body>
+</html>

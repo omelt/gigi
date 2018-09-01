@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="eleven.lc.gigi.dao.CommentDao">
+    <resultMap id="CommentMap" type="eleven.lc.gigi.entity.Comment">
+        <id property="id" column="id" />
+        <result property="goods" column="goods" />
+        <result property="bads" column="bads" />
+        <result property="content" column="content" />
+        <result property="date" column="date" />
+        <association property="talker"  fetchType="lazy"   column="userId" select="eleven.lc.gigi.dao.UserDao.selectById"></association>
+
+        <association property="source"   fetchType="lazy"   column="videoId" select="eleven.lc.gigi.dao.VideoDao.selectByIdNotDetail"></association>
+        
+        <collection property="response" fetchType="lazy" column="id" select="selectResponse" ></collection>
+        
+    </resultMap>
+
+    <resultMap id="CommentMapNoSource" type="eleven.lc.gigi.entity.Comment">
+        <id property="id" column="id" />
+        <result property="goods" column="goods" />
+        <result property="bads" column="bads" />
+        <result property="content" column="content" />
+        <result property="date" column="date" />
+        <association property="talker"  fetchType="lazy"   column="userId" select="eleven.lc.gigi.dao.UserDao.selectById"></association>
+
+        <collection property="response" fetchType="lazy" column="id" select="selectResponse" ></collection>
+
+    </resultMap>
+
+    <select id="selectResponse" parameterType="Long" resultMap="CommentMapNoSource">
+        SELECT * FROM comment WHERE commentId=#{id} ORDER BY date DESC
+    </select>
+
+    <select id="selectOrderByTime" resultMap="CommentMap">
+        SELECT * FROM comment ORDER BY date desc LIMIT 3
+    </select>
+    
+    <select id="selectVideoComment" parameterType="int" resultMap="CommentMap" >
+       SELECT * FROM comment WHERE videoId=#{id} ORDER BY date DESC
+    </select>
+
+    <select id="selectUserComment" parameterType="int" resultMap="CommentMap">
+        SELECT * FROM comment WHERE userId=#{id} ORDER BY date DESC
+    </select>
+
+    <insert id="insertNewComment" parameterType="eleven.lc.gigi.entity.Comment">
+        INSERT INTO comment(content,userId,videoId,commentId)
+                VALUES (#{content},#{userId},#{videoId},#{commentId})
+    </insert>
+</mapper>

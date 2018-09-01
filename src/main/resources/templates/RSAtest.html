@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}">
+
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="js/jquery.js"></script>
+    <script src="js/jsencrypt.js"></script>
+</head>
+<body>
+<input id="password">
+<button id="test"></button>
+<script>
+    $(document).ready(function () {
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+        $(document).ajaxSend(function (e, xhr, options) {
+            xhr.setRequestHeader(header, token);
+        });
+
+        $("#test").click(function () {
+            var publicKey;
+            $.post("/getPublicKey")
+                .done(function (res) {
+                    alert(res);
+                    publicKey = res;
+                    var encrypt = new JSEncrypt();
+                    encrypt.setPublicKey(publicKey);
+                    var encryptPwd = encrypt.encrypt($('#password').val());
+                    alert(encryptPwd);
+                    $.post("/testPassword", {encryptPwd: encryptPwd});
+                });
+
+        });
+    });
+
+    function generateEntype() {
+        var words = "这里写上一句超长的话！";
+        var publicKey = "your publicKey";//这里的公钥是通过base64加密转化的
+        var encrypt = new JSEncrypt();
+        encrypt.setPublicKey(publicKey);
+        var encryptPwd = encrypt.encryptLong(words);
+        $.ajax({
+            url: "store/savePage",
+            type: 'post',
+            data: {data: encryptPwd},
+            dataType: 'json',
+            //contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                console.info(data);
+            },
+            error: function (xhr) {
+                //console.error('出错了');
+            }
+        });
+    }
+</script>
+</body>
+</html>

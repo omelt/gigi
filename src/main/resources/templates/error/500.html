@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head th:replace="base::baseHead('500')"></head>
+
+<body>
+
+<header th:replace="base::baseNav"></header>
+
+<div id="page-content" class="archive-page">
+    <div class="container">
+        <div class="row">
+            <h2>error500</h2>
+            <h3 th:text="${error.url}"></h3>
+            <p th:text="${error.message}">
+            <p th:text="${error.data}">
+            </p>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="base::baseFooter"></footer>
+
+</body>
+</html>

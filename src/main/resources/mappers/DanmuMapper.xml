@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="eleven.lc.gigi.dao.DanmuDao">
+    <resultMap id="DanmuMap" type="eleven.lc.gigi.entity.Danmu">
+        <id property="id" column="id" />
+        <result property="color" column="color" />
+        <result property="position" column="position" />
+        <result property="size" column="size" />
+        <result property="text" column="text" />
+        <result property="time" column="time" />
+    </resultMap>
+
+    <select id="selectVideoDanmu"  parameterType="Long" resultMap="DanmuMap">
+        SELECT * FROM danmu WHERE videoId=#{id}
+    </select>
+    <insert id="insertNewDanmu" parameterType="eleven.lc.gigi.entity.Danmu">
+        INSERT INTO danmu(color, position, size, text, time, videoId)
+        VALUES (#{color},#{position},#{size},#{text},#{time},#{videoId})
+    </insert>
+</mapper>

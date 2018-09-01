@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="base::baseHead('Login')"></head>
+<body>
+
+<header th:replace="base::baseNav"></header>
+
+<div id="page-content" class="contact-page">
+    <div class="container">
+        <div class="row">
+            <div id="main-content" class="col-md-9">
+                <div class="box">
+                    <center>
+                        <div class="art-header">
+                            <h1 class="center">Login</h1>
+
+                        </div>
+                    </center>
+                    <div class="art-content">
+                        <div id="contact_form">
+                            <span th:if="${loginError}" th:text="${loginError}"></span>
+                            <span th:if="${param.error}"
+                                  th:text="${session.SPRING_SECURITY_LAST_EXCEPTION.message}"></span>
+                            <form name="form1" id="ff" method="post" th:action="@{/user/login}">
+                                    <label>
+                                        <span>Enter your username:</span>
+                                        <input name="username" id="username" required="" type="text"
+                                               th:value="${loginUsername}">
+                                    </label>
+                                    <label>
+                                        <span>Enter your password:</span>
+                                        <input name="password" id="password" required="" type="password">
+                                    </label>
+                                    <label>
+                                        <span>Enter your password:</span><img src="/verificationCode"/>
+                                        <input name="verificationCode" id="verificationCode" type="text">
+
+                                    </label>
+
+                                    <center><input id="form-submit" class="sendButton" name="Submit" value="Submit"
+                                                   type="button"></center>
+                                    <a target="_blank" id="changeE" role="button"   >邮箱登录</a>
+                            </form>
+                            <form name="form1" id="ef" method="post" th:action="@{/user/emailLogin}" style="display: none">
+                                <label>
+                                    <span>Enter your Email:</span>
+                                    <input name="email" id="email" required="" type="text">
+                                </label>
+                                <label><input type="button" id="sendEmail" value="发送邮件"></label>
+                                <label>
+                                    <span>Enter your VerificationCode:</span>
+                                    <input name="checkCode" id="checkCode" type="text" required="">
+
+                                </label>
+
+                                <center><input id="email-form" class="sendButton" name="Submit" value="Submit"
+                                               type="submit"></center>
+                                <a target="_blank" id="changeU" role="button"   >普通登录</a>
+                            </form >
+                            <script>
+                                $(document).ready(function () {
+                                    $('#changeE').click(function () {
+                                        $('#ff').css("display","none");
+                                        $('#ef').css("display","block");
+                                    });
+                                    $('#changeU').click(function () {
+                                        $('#ef').css("display","none");
+                                        $('#ff').css("display","block");
+                                    });
+                                    $('#sendEmail').click(function () {
+                                        $.post("/sendCheckCode",{email:$("#email").val()}).done(function () {
+                                            alert("请前往邮箱获取验证码(如果找不到邮件请尝试检查垃圾邮件，或重新发送)")
+                                        });
+                                    });
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:replace="base::sidebar"></div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="base::baseFooter"></footer>
+<script src="/js/jsencrypt.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $("#form-submit").click(function () {
+            var publicKey;
+            $.post("/getPublicKey")
+                .done(function (res) {
+                    publicKey = res;
+                    var encrypt = new JSEncrypt();
+                    encrypt.setPublicKey(publicKey);
+                    var encryptPwd = encrypt.encrypt($('#password').val());
+//                    $.post("/user/login", {username: $('#username').val(), password: encryptPwd});
+                    $("#password").val(encryptPwd);
+                    $("#ff").submit();
+                });
+
+        });
+    });
+</script>
+</body>
+</html>

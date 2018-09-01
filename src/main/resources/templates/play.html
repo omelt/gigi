@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+<head th:replace="base::baseHead('Play')">
+</head>
+<link href="/danmuVideo/css/danmuplayer.css" rel="stylesheet">
+<style>
+    .post .wrapper .info span {
+        display: inline;
+    }
+
+    .collected {
+        background-color: hotpink;
+    }
+
+</style>
+<body>
+
+<header th:replace="base::baseNav"></header>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="min-width:600px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">查看回复</h4>
+            </div>
+            <div class="modal-body">
+                <div id="modal-box" class="container" style="min-width: 400px;width: 96%">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input id="response-input" type="input" placeholder="回复....." required="">
+                <button id="submit-response" type="button" class="btn btn-primary">Submit</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" style="color: black">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="page-content" class="single-page">
+    <div class="container">
+        <div class="row">
+            <div id="main-content" class="col-md-9">
+                <div class="wrap-vid">
+                    <div id="danmup"></div>
+                </div>
+                <div class="share">
+                    <ul class="list-inline center">
+                        <li><a target='_blank' href="#" class="btn btn-facebook"><i class="fa fa-facebook"></i> Share</a></li>
+                        <li><a target='_blank' href="#" class="btn btn-twitter"><i class="fa fa-twitter"></i> Tweet</a></li>
+                        <li><a target='_blank' href="#" class="btn btn-pinterest"><i class="fa fa-pinterest"></i> Tweet</a></li>
+                        <li><a target='_blank' href="#" class="btn btn-google"><i class="fa fa-google-plus-square"></i> Google+</a></li>
+                        <li><a target='_blank' href="#" class="btn btn-mail"><i class="fa fa-envelope-o"></i> E-mail</a></li>
+                    </ul>
+                </div>
+                <div class="line"></div>
+                <h1 class="vid-name"><a target='_blank' href="#" th:text="${curVideo.title}"></a></h1>
+                <div class="info">
+                    <h5>By <a target='_blank' href="#" th:text="${curVideo.publisher.nickname}"></a></h5>
+                    <span><i class="fa fa-calendar"></i><span
+                            th:text="${#dates.format(curVideo.date,'yyyy-MM-dd HH:mm:ss')}"></span></span>
+                    <span><i class="fa fa-heart"></i><span th:text="${curVideo.goods}"></span></span>
+                    <span><i class="glyphicon glyphicon-play-circle" aria-hidden="true"></i><span
+                            th:text="${curVideo.times}"></span></span>
+
+
+                    <span id="do-collect" th:if="not ${isCollect}">
+                        <i class="glyphicon glyphicon-tag" aria-hidden="true"></i>
+                        <span th:text="${curVideo.collectNum}"></span>
+                    </span>
+                    <span id="do-collect" th:if="${isCollect}" class="collected">
+                        <i class="glyphicon glyphicon-tag" aria-hidden="true"></i>
+                        <span th:text="${curVideo.collectNum}"></span>
+                    </span>
+
+                    <span><i class="glyphicon glyphicon-comment" aria-hidden="true"></i>
+                        <span id="commentView" th:text="${curVideo.commentNum}"></span></span>
+                </div>
+
+                <p style="margin-top: 20px" th:text="${curVideo.introduction}"></p>
+                <div class="vid-tags">
+                    <a target='_blank' th:each="i:${#strings.arraySplit(curVideo.tags,',')}" th:text="${i}"
+                       th:href="@{'/search/tag/'+${i}+'/1'}"></a>
+
+                </div>
+                <div class="line"></div>
+                <div class="comment">
+                    <h3>Leave A Comment</h3>
+                    <div name="form1" method="post" action="">
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <textarea name="message" id="message" class="form-control" rows="2" cols="10"
+                                              required="" placeholder="Message"></textarea>
+                                </div>
+                                <button type="button" class="btn btn-4 btn-block" name="btnSend" id="btnSend">
+                                    Send
+                                </button>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="heading"><h4><i class="fa fa-comments"></i> Comment</h4></div>
+                                <div id="comment-content" class="content">
+                                    <!--<div class="post" th:each="comment:${curVideo.comments}">-->
+                                    <!--<a target='_blank' class="pull-left" th:href="'/user/info/'+${comment.talker.username}">-->
+                                    <!--<img th:src="${comment.talker.avatar}" style="width: 50px;height: 50px;"><br>-->
+                                    <!--<span th:text="${comment.talker.nickname}"></span>-->
+                                    <!--</a>-->
+                                    <!--<div class="wrapper col-md-10" >-->
+
+                                    <!--<p style='word-break:break-all;' th:text="${comment.content}"></p>-->
+                                    <!--<div class="info">-->
+                                    <!--<span><i class="fa fa-calendar" aria-hidden="true"></i>-->
+                                    <!--<span th:text="${#dates.format(comment.date,'yyyy-MM-dd HH:mm:ss')}"></span></span>-->
+                                    <!--<span><i class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></i>-->
+                                    <!--<span th:text="${comment.goods}"></span></span>-->
+                                    <!--<span><i class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></i>-->
+                                    <!--<span th:text="${comment.bads}"></span></span>-->
+
+                                    <!--</div>-->
+                                    <!--</div><hr>-->
+                                    <!--</div>-->
+                                </div>
+                                <center>
+                                    <ul class="pagination">
+
+                                    </ul>
+                                </center>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="line"></div>
+                <div class="box">
+                    <div class="box-header">
+                        <h2><i class="fa fa-globe"></i> RELATED VIDEOS</h2>
+                    </div>
+                    <div class="box-content">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="wrap-vid">
+                                    <div class="zoom-container">
+                                        <div class="zoom-caption">
+                                            <span>Video's Tag</span>
+                                            <a target='_blank' href="http://www.jq22.com/demo/jQueryvideomoban201702190044/single.html">
+                                                <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                                            </a>
+                                            <p>Video's Name</p>
+                                        </div>
+                                        <img src="/img/7.jpg">
+                                    </div>
+                                    <h3 class="vid-name"><a target='_blank' href="#">Video's Name</a></h3>
+                                    <div class="info">
+                                        <h5>By <a target='_blank' href="#">Kelvin</a></h5>
+                                        <span><i class="fa fa-calendar"></i>25/3/2015</span>
+                                        <span><i class="fa fa-heart"></i>1,200</span>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="wrap-vid">
+                                    <div class="zoom-container">
+                                        <div class="zoom-caption">
+                                            <span>Video's Tag</span>
+                                            <a target='_blank' href="http://www.jq22.com/demo/jQueryvideomoban201702190044/single.html">
+                                                <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                                            </a>
+                                            <p>Video's Name</p>
+                                        </div>
+                                        <img src="/img/8.jpg">
+                                    </div>
+                                    <h3 class="vid-name"><a target='_blank' href="#">Video's Name</a></h3>
+                                    <div class="info">
+                                        <h5>By <a target='_blank' href="#">Kelvin</a></h5>
+                                        <span><i class="fa fa-calendar"></i>25/3/2015</span>
+                                        <span><i class="fa fa-heart"></i>1,200</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="wrap-vid">
+                                    <div class="zoom-container">
+                                        <div class="zoom-caption">
+                                            <span>Video's Tag</span>
+                                            <a target='_blank' href="http://www.jq22.com/demo/jQueryvideomoban201702190044/single.html">
+                                                <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                                            </a>
+                                            <p>Video's Name</p>
+                                        </div>
+                                        <img src="/img/9.jpg">
+                                    </div>
+                                    <h3 class="vid-name"><a target='_blank' href="#">Video's Name</a></h3>
+                                    <div class="info">
+                                        <h5>By <a target='_blank' href="#">Kelvin</a></h5>
+                                        <span><i class="fa fa-calendar"></i>25/3/2015</span>
+                                        <span><i class="fa fa-heart"></i>1,200</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:replace="base::sidebar"></div>
+        </div>
+    </div>
+</div>
+<button type="button" style="display: none" data-toggle='modal' data-target='#myModal' id="show-modal"></button>
+<footer th:replace="base::baseFooter"></footer>
+<script src="/danmuVideo/js/danmuplayer.min.js"></script>
+<script>
+    /**************************************时间格式化处理************************************/
+    function dateFtt(fmt, date) { //author: meizz
+        var o = {
+            "M+": date.getMonth() + 1,                 //月份
+            "d+": date.getDate(),                    //日
+            "h+": date.getHours(),                   //小时
+            "m+": date.getMinutes(),                 //分
+            "s+": date.getSeconds(),                 //秒
+            "q+": Math.floor((date.getMonth() + 3) / 3), //季度
+            "S": date.getMilliseconds()             //毫秒
+        };
+        if (/(y+)/.test(fmt))
+            fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt))
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $("#comment-content").on("click", "span[name='viewResponse']", function () {
+            var tar = $(this).attr("data-tar");
+            $("#modal-box").html("");
+            $.post("/comment/response", {id: tar}).done(function (res) {
+                if (res.length === 0) {
+                    $("#modal-box").html("没有回复");
+                } else {
+                    $.each(res, function (i, val) {
+                        $("#modal-box").append("<div class='post'>" +
+                            "                                        <a target='_blank' class='pull-left' href='/user/info/'" + val["talker"]["username"] + ">" +
+                            "                                            <img src='" + val["talker"]["avatar"] + "' style='width: 50px;height: 50px;'><br>" +
+                            "                                            <span>" + val["talker"]["nickname"] + "</span>" +
+                            "                                        </a>" +
+                            "                                        <div class='wrapper col-md-10'>" +
+                            "                                            <p style='word-break:break-all;' >" + val['content'] + "</p>" +
+                            "                                            <div class='info'>" +
+                            "" +
+                            "                                                <span><i class='fa fa-calendar' aria-hidden='true'></i>" +
+                            "                                                    <span>" + val['date'].split('.')[0] + "</span></span>" +
+                            "                                                <span><i class='glyphicon glyphicon-thumbs-up' aria-hidden='true'></i>" +
+                            "                                                    <span>" + val['goods'] + "</span></span>" +
+                            "                                                <span><i class='glyphicon glyphicon-thumbs-down' aria-hidden='true'></i>" +
+                            "                                                    <span>" + val['bads'] + "</span></span>" +
+                            "                                            </div>" +
+                            "                                        </div><hr>" +
+                            "                                    </div>");
+                    });
+                }
+                $('#response-input').attr("data-comment",tar);
+                $("#show-modal").click();
+            }).error(function () {
+                alert("获取评论失败");
+            });
+        });
+    });
+</script>
+<script>
+
+    var videoId = [[${curVideo.id}]];
+    $(document).ready(function () {
+        getConmment();
+        $(".pagination").on("click", "li a", function () {
+//            alert($(this).attr("data-page"));
+            getConmment($(this).attr("data-page"));
+        });
+
+
+    });
+
+    function getConmment(page) {
+        if (page == null) page = 1;
+        $.post("/comment/get", {id: videoId, nowPage: page}).done(function (res) {
+            $("#comment-content").html("");
+            $(".pagination").html("");
+            $.each(res["items"], function (i, val) {
+                $("#comment-content").append("<div class='post'>" +
+                    "                                        <a target='_blank' class='pull-left' href='/user/info/'" + val["talker"]["username"] + ">" +
+                    "                                            <img src='" + val["talker"]["avatar"] + "' style='width: 50px;height: 50px;'><br>" +
+                    "                                            <span>" + val["talker"]["nickname"] + "</span>" +
+                    "                                        </a>" +
+                    "                                        <div class='wrapper col-md-10'>" +
+                    "                                            <p style='word-break:break-all;' >" + val['content'] + "</p>" +
+                    "                                            <div class='info'>" +
+                    "" +
+                    "                                                <span><i class='fa fa-calendar' aria-hidden='true'></i>" +
+                    "                                                    <span>" + val['date'].split('.')[0] + "</span></span>" +
+                    "                                                <span><i class='glyphicon glyphicon-thumbs-up' aria-hidden='true'></i>" +
+                    "                                                    <span>" + val['goods'] + "</span></span>" +
+                    "                                                <span><i class='glyphicon glyphicon-thumbs-down' aria-hidden='true'></i>" +
+                    "                                                    <span>" + val['bads'] + "</span></span>" +
+                    "                                                <span class='pull-right' name='viewResponse' data-tar='" + val["id"] + "'>" +
+                    "                                                   <i class='glyphicon glyphicon-comment' aria-hidden='true'></i>查看回复</span>" +
+                    "                                            </div>" +
+                    "                                        </div><hr>" +
+                    "                                    </div>");
+            });
+            if (page != 1) {
+                $(".pagination").append("<li><a  href='javascript:;' data-page='1' ><span aria-hidden='true'>首页</span></a></li>")
+            }
+            if (res["isLess"]) {
+                $(".pagination").append("<li> <a  href='javascript:;' data-page='" + (Number(page) - 1) + "' aria-label='Previous'> <span aria-hidden='true'>«</span> </a> </li>");
+            }
+            for (var i = res["startIndex"]; i <= res["endIndex"]; i++) {
+                if (i != Number(page)) {
+                    $(".pagination").append("<li><a href='javascript:;' data-page='" + i + "'>" + i + "</a></li>");
+                } else {
+                    $(".pagination").append("<li><span>" + i + "</span></li>");
+                }
+            }
+            if (res["isMore"]) {
+                $(".pagination").append("<li> <a href='javascript:;'  data-page='" + (Number(page) + 1) + "' aria-label='Next'> <span aria-hidden='true'>»</span> </a> </li>");
+            }
+            if (page < res["totalPage"]) {
+                $(".pagination").append("<li><a  href='javascript:;' data-page='" + res["totalPage"] + "' ><span aria-hidden='true'>末页</span></a></li>")
+            }
+            /*
+                                                    <li>
+                                                        <a target='_blank' href="#" aria-label="Previous">
+                                                            <span aria-hidden="true">«</span>
+                                                        </a>
+                                                    </li>
+                                                    <li><a target='_blank' href="#">1</a></li>
+                                                    <li><a target='_blank' href="#">2</a></li>
+                                                    <li><a target='_blank' href="#">3</a></li>
+                                                    <li><a target='_blank' href="#">4</a></li>
+                                                    <li><a target='_blank' href="#">5</a></li>
+                                                    <li>
+                                                        <a target='_blank' href="#" aria-label="Next">
+                                                            <span aria-hidden="true">»</span>
+                                                        </a>
+                                                    </li>
+             */
+
+        });
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $("#danmup").DanmuPlayer({
+
+            src: " [[${curVideo.content}]]",//"/video/了不起的麦瑟尔夫人-S1-01.mp4",    //视频源
+
+            height: 500,             //播放器的高度
+
+            width: 835,				//播放器的宽度,最小宽度支持为720
+
+            speed: 5000,			//弹幕速度，这是数值指的是视频穿过672像素所需要的毫秒数
+
+            sumTime: 65535,				//弹幕视频的总时间，可不填。
+
+            danmuList: {},				//弹幕列表
+
+            defaultColor: "#ffffff",   //弹幕的默认字体颜色
+
+            fontSizeSmall: 16,			//小弹幕的字号
+
+            FontSizeBig: 24,				//大弹幕的字号
+
+            opacity: "1",  			//弹幕默认透明度
+
+            topBottonDanmuTime: 6000,  //底部及顶部弹幕存留的时间
+
+            urlToGetDanmu: "",     //用来接收弹幕信息的url  (稍后介绍)
+
+            urlToPostDanmu: "/danmu/upload/[[${curVideo.id}]]",   //用来存储弹幕信息的url  (稍后介绍)
+
+            maxCountInScreen: 40,   //屏幕上的最大的显示弹幕数目,弹幕数量过多时,优先加载最新的。
+
+            maxCountPerSec: 10      //每分秒秒钟最多的弹幕数目,弹幕数量过多时,优先加载最新的。
+
+        });
+        $.get("/danmu/get/[[${curVideo.id}]]").done(function (res) {
+            $("#danmup .danmu-div").danmu("addDanmu", JSON.parse(res));
+        }).fail(function () {
+            alert("连接弹幕失败")
+        });
+    });
+</script>
+<script sec:authorize="isAuthenticated()">
+
+    $(document).ready(function () {
+
+
+        var videoId = [[${curVideo.id}]];
+
+        $('#btnSend').click(function () {
+            if ($('#message').val().length > 250) {
+                alert("评论字数过多");
+            }
+            else if ($('#message').val() != "" && $('#message').val() != null) {
+                $.post("/user/publishComment", {videoId: videoId, content: $('#message').val()}).done(function (res) {
+                    if (res["flag"] === "ok") {
+                        $("#comment-content").prepend("<div class='post'>" +
+                            "                                        <a target='_blank' class='pull-left' href='/user/info/'" + res["username"] + ">" +
+                            "                                            <img src='" + res["avatar"] + "' style='width: 50px;height: 50px;'><br>" +
+                            "                                            <span>" + res["nickname"] + "</span>" +
+                            "                                        </a>" +
+                            "                                        <div class='wrapper col-md-10'>" +
+                            "                                            <p style='word-break:break-all;' >" + $('#message').val() + "</p>" +
+                            "                                            <div class='info'>" +
+                            "" +
+                            "                                                <span><i class='fa fa-calendar' aria-hidden='true'></i>" +
+                            "                                                    <span>" + dateFtt("yyyy-MM-dd hh:mm:ss", new Date(Date.now())) + "</span></span>" +
+                            "                                                <span><i class='glyphicon glyphicon-thumbs-up' aria-hidden='true'></i>" +
+                            "                                                    <span>0</span></span>" +
+                            "                                                <span><i class='glyphicon glyphicon-thumbs-down' aria-hidden='true'></i>" +
+                            "                                                    <span>0</span></span>" +
+                            "" +
+                            "                                            </div>" +
+                            "                                        </div><hr>" +
+                            "                                    </div>");
+                        $("#commentView").html((Number($("#commentView").html()) + 1));
+                    } else if (res["flag"] === "fail") {
+                        alert("评论失败");
+                    }
+                })
+            }
+        });
+
+        $('#submit-response').click(function () {
+            if ($('#response-input').val().length > 250) {
+                alert("评论字数过多");
+            }
+            else if ($('#response-input').val() != "" && $('#response-input').val() != null) {
+                $.post("/user/publishComment", {videoId: videoId, content: $('#response-input').val(),commentId:Number($('#response-input').attr("data-comment"))}).done(function (res) {
+                    if (res["flag"] === "ok") {
+                        var outString="<div class='post'>" +
+                            "                                        <a target='_blank' class='pull-left' href='/user/info/'" + res["username"] + ">" +
+                            "                                            <img src='" + res["avatar"] + "' style='width: 50px;height: 50px;'><br>" +
+                            "                                            <span>" + res["nickname"] + "</span>" +
+                            "                                        </a>" +
+                            "                                        <div class='wrapper col-md-10'>" +
+                            "                                            <p style='word-break:break-all;' >" + $('#response-input').val() + "</p>" +
+                            "                                            <div class='info'>" +
+                            "" +
+                            "                                                <span><i class='fa fa-calendar' aria-hidden='true'></i>" +
+                            "                                                    <span>" + dateFtt("yyyy-MM-dd hh:mm:ss", new Date(Date.now())) + "</span></span>" +
+                            "                                                <span><i class='glyphicon glyphicon-thumbs-up' aria-hidden='true'></i>" +
+                            "                                                    <span>0</span></span>" +
+                            "                                                <span><i class='glyphicon glyphicon-thumbs-down' aria-hidden='true'></i>" +
+                            "                                                    <span>0</span></span>" +
+                            "" +
+                            "                                            </div>" +
+                            "                                        </div><hr>" +
+                            "                                    </div>";
+                        $("#comment-content").prepend(outString);
+                        $("#modal-box").prepend(outString);
+                        $("#commentView").html((Number($("#commentView").html()) + 1));
+                    } else if (res["flag"] === "fail") {
+                        alert("评论失败");
+                    }
+                })
+            }
+        });
+
+
+        $('#do-collect').click(function () {
+            if ($('#do-collect').hasClass("collected")) {
+                $.post("/user/cancelCollect", {tar: videoId}).done(function (res) {
+                    if (res == "ok") {
+                        $('#do-collect').removeClass("collected");
+                        var num = $('#do-collect span').html();
+                        $('#do-collect span').html(Number(num) - 1);
+                        alert("取消收藏成功");
+                    } else if (res == "fail") {
+                        alert("收藏失败");
+                    } else {
+                        alert("请先登录");
+                    }
+                });
+
+            }
+            else {
+                $.post("/user/doCollect", {tar: videoId}).done(function (res) {
+                    if (res == "ok") {
+                        $('#do-collect').addClass("collected");
+                        var num = $('#do-collect span').html();
+                        $('#do-collect span').html(Number(num) + 1);
+                        alert("收藏成功");
+                    } else if (res == "fail") {
+                        alert("收藏失败");
+                    } else {
+                        alert("请先登录");
+                    }
+                });
+            }
+
+
+        });
+
+    })
+    ;
+</script>
+<script sec:authorize="not isAuthenticated()">
+    $(document).ready(function () {
+        $('#btnSend').click(function () {
+            alert("请先登录");
+        });
+        $('#do-collect').click(function () {
+            alert("请先登录");
+        });
+        $('#submit-response').click(function () {
+            alert("请先登录");
+        });
+    });
+</script>
+</body>
+</html>

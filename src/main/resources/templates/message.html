@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="base::baseHead('Message')"></head>
+<link href="/css/cropper.css" rel="stylesheet">
+<style>
+    .cropper-view-box,
+    .cropper-face {
+        border-radius: 50%;
+    }
+</style>
+
+<body>
+
+<header th:replace="base::baseNav"></header>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="min-width:600px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">选择区域</h4>
+            </div>
+            <div class="modal-body">
+                <div id="box" class="container" style="min-width: 400px;width: 80%">
+
+                    <img id="image" src="" style="min-width: 400px;width: 90%">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="close-head" type="button" class="btn btn-default" data-dismiss="modal" style="color: black">
+                    Close
+                </button>
+                <button id="save-head" type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="VIPModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="min-width:600px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">购买VIP</h4>
+            </div>
+            <div class="modal-body">
+                <form id="buyForm" class="container" style="min-width: 400px;width: 80%" method="post" th:action="@{/payVIP}">
+
+                    订单号:<input id="WIDout_trade_no" name="WIDout_trade_no" readonly>
+                    购买项目:<input id="WIDsubject" name="WIDsubject" readonly>
+                    金额:<input id="WIDtotal_amount" name="WIDtotal_amount" readonly>
+                    描述:<input  name="WIDbody" readonly value="成为帅气的会员大人!!!">
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button  type="button" class="btn btn-default" data-dismiss="modal" style="color: black">
+                    Close
+                </button>
+                <button id="sureBuy" type="button" class="btn btn-primary">Sure</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="page-content" class="contact-page">
+
+    <div class="container">
+        <div class="row">
+            <div id="main-content" class="col-md-9">
+                <div class="box">
+                    <div class="art-content">
+                        <div id="contact_form">
+                            <div name="form1" id="ff" th:if="${nowUser}">
+                                <center><img id="show-head" alt="头像" style="width:120px;height:120px"
+                                             class="normalFace img-thumbnail"
+                                             th:src="${nowUser.avatar}" onclick="fileSelect();">
+                                    <span th:if="${session.SPRING_SECURITY_CONTEXT.authentication.principal.vip} eq 1" class="glyphicon glyphicon-king" aria-hidden="true">-VIP-</span>
+                                    <button th:if="${session.SPRING_SECURITY_CONTEXT.authentication.principal.vip} eq 0" id="buyVIP" data-toggle="modal" data-target="#VIPModal">购买VIP</button>
+
+                                    <div th:if="not (${session.SPRING_SECURITY_CONTEXT.authentication.principal.id} eq ${nowUser.id})">
+                                        <button th:if="not (${#lists.contains(session.SPRING_SECURITY_CONTEXT.authentication.principal.follows,nowUser)})" id="follow-button" class="btn btn-info" style="color: black">关注</button>
+                                        <button th:if="${#lists.contains(session.SPRING_SECURITY_CONTEXT.authentication.principal.follows,nowUser)}" id="follow-button" class="btn btn-default" style="color: black" >取消关注</button>
+                                    </div>
+                                </center>
+                                <input type="file" name="fileToUpload" id="fileToUpload" data-toggle="modal"
+                                       data-target="#myModal" onchange="fileSelected(this);"
+                                       style="display:none;">
+
+                                <label>
+                                    Lv.<span th:text="${nowUser.level}"></span><br>
+                                    Exp:<span th:text="${nowUser.exp}"></span>/<span
+                                        th:text="(${nowUser.level}+1)*1000"></span>
+                                </label>
+                                <label>
+                                    <span>Nickname:</span>
+                                    <input name="nickname" id="nickname" required="" type="text"
+                                           th:value="${nowUser.nickname}">
+                                </label>
+                                <label>
+                                    <span>Email:</span>
+                                    <input name="email" id="email" required="" type="text" th:value="${nowUser.email}">
+                                </label>
+                                <label>
+                                    <span>Sex:</span>
+                                    <span id="sexView" th:text="${nowUser.sex}"></span>
+                                    <div th:if="${session.SPRING_SECURITY_CONTEXT.authentication.principal.id} eq ${nowUser.id}">
+                                        <button name="sex-btn">男</button>
+                                        <button name="sex-btn">女</button>
+                                        <button name="sex-btn">保密</button>
+                                    </div>
+
+                                </label>
+                                <label>
+                                    <span>Introduction:</span>
+                                    <textarea name="introduction" id="introduction" required=""
+                                              th:text="${nowUser.introduction}"></textarea>
+                                </label>
+
+                                <center><input
+                                        th:if="${session.SPRING_SECURITY_CONTEXT.authentication.principal.id} eq ${nowUser.id}"
+                                        id="cha-form" class="sendButton" name="Submit" value="Change"
+                                        type="button"></center>
+                            </div>
+                            <h1 th:if="not ${nowUser}" style="color: red">没有用户</h1>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:replace="base::sidebar"></div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="base::baseFooter"></footer>
+<script src="/js/cropper.js"></script>
+<script src="/js/jquery-cropper.js"></script>
+<script th:if="not (${session.SPRING_SECURITY_CONTEXT.authentication.principal.id} eq ${nowUser.id})">
+    $("input").each(function () {
+        $(this).attr("readonly", "");
+    });
+    $("#introduction").attr("readonly", "");
+</script>
+<script th:if="${payFlag}">
+    var msg=[[${payFlag}]];
+    $(document).ready(function () {
+       alert(msg);
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $("button[name='sex-btn']").click(function () {
+            $("#sexView").html($(this).html());
+        });
+    });
+</script>
+<script>
+    var followId = [[${nowUser.id}]];
+    $(document).ready(function () {
+        $("#follow-button").click(function () {
+            if ($(this).html() === "取消关注") {
+                $.post("/user/cancelFollow", {followId: followId}).done(function (res) {
+                    if (res === "ok") {
+                        $("#follow-button").html("关注");
+                        $("#follow-button").attr("class", "btn btn-info");
+                    }else if(res === "fail"){
+                        alert("取关失败");
+                    }
+                }).error(function () {
+                    alert("操作失败");
+                });
+            } else if ($(this).html() === "关注") {
+                $.post("/user/doFollow", {followId: followId}).done(function (res) {
+                    if (res === "ok") {
+                        $("#follow-button").html("取消关注");
+                        $("#follow-button").attr("class", "btn btn-default");
+                    }else if(res === "fail") {
+                        alert("关注失败");
+                    }
+                }).error(function () {
+                   alert("操作失败");
+                });
+            }
+        });
+    });
+
+</script>
+<script th:if="${session.SPRING_SECURITY_CONTEXT.authentication.principal.id} eq ${nowUser.id}">
+
+    function GetDateNow() {
+        var vNow = new Date();
+        var sNow = "";
+        sNow += String(vNow.getFullYear());
+        sNow += String(vNow.getMonth() + 1);
+        sNow += String(vNow.getDate());
+        sNow += String(vNow.getHours());
+        sNow += String(vNow.getMinutes());
+        sNow += String(vNow.getSeconds());
+        sNow += String(vNow.getMilliseconds());
+        document.getElementById("WIDout_trade_no").value =  sNow;
+        document.getElementById("WIDsubject").value = "gigi-VIP购买";
+        document.getElementById("WIDtotal_amount").value = "5.00";
+    }
+    GetDateNow();
+
+    function create_pick() {
+        var $image = $('#image');
+
+        $image.cropper({
+            aspectRatio: 1 / 1,
+            viewMode: 1,
+            dragMode: "none",
+            zoomOnWheel: false,
+            zoomOnTouch: false,
+            zoomable: false,
+            crop: function (event) {
+
+            }
+        });
+
+        // Get the Cropper.js instance after initialized
+        var cropper = $image.data('cropper');
+    }
+
+    $(create_pick());
+
+
+    function fileSelect() {
+        document.getElementById("fileToUpload").click();
+    }
+
+    function fileSelected(temp) {
+
+        // 文件选择后触发次函数
+        var file = temp.files[0];
+        var reader = new FileReader();
+        // show表示<div id='show'></div>，用来展示图片预览的
+        if (!/image\/\w+/.test(file.type)) {
+            alert("请确保文件为图像类型");
+            return false;
+        }
+        // onload是异步操作
+        reader.onload = function () {
+            // $("#tar").attr("src", reader.result);
+            // $("#image").attr("src",reader.result);
+            // create_pick()
+            $('#image').cropper('reset').cropper('replace', reader.result);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    //    上传头像
+    $(document).ready(function () {
+        $('#sureBuy').click(function () {
+            $('#buyForm').submit();
+        });
+
+        $('#save-head').click(function () {
+            var cas = $('#image').cropper('getCroppedCanvas');
+            var base64url = cas.toDataURL('image/jpeg');
+
+            $.post('/user/uploadHead', {
+                data: base64url
+            }).done(function () {
+                $('#show-head').attr('src', base64url);
+                $('#nav-head').attr('src', base64url);
+                $('#close-head').click()
+            }).error(function () {
+                alert('头像上传出错')
+            });
+
+        });
+
+        var nicknameInit = $("#nickname").val();
+        var emailInit = $("#email").val();
+        var sexInit = $("#sexView").html();
+        var introductionInit = $("#introduction").val();
+
+        $('#cha-form').click(function () {
+            var flag = 0;
+            var nickname = null;
+            if (nicknameInit != $("#nickname").val()) {
+                nickname = $("#nickname").val();
+                flag += 1;
+            }
+            var email = null;
+            if (emailInit != $("#email").val()) {
+                email = $("#email").val();
+                flag += 1;
+            }
+            var sex = null;
+            if (sexInit != $("#sexView").html()) {
+                sex = $("#sexView").html();
+                flag += 1;
+            }
+            var introduction = null;
+            if (introductionInit != $("#introduction").val()) {
+                introduction = $("#introduction").val();
+                flag += 1;
+            }
+            if (flag > 0) {
+                $.post("/user/changeInfo", {
+                    nickname: nickname,
+                    email: email,
+                    sex: sex,
+                    introduction: introduction
+                }).done(function (res) {
+                    if (res == "ok") {
+                        nicknameInit = $("#nickname").val();
+                        emailInit = $("#email").val();
+                        sexInit = $("#sexView").html();
+                        introductionInit = $("#introduction").val();
+                        alert("修改成功");
+                    } else {
+                        $("#nickname").val(nicknameInit);
+                        $("#email").val(emailInit);
+                        $("#sexView").html(sexInit);
+                        $("#introduction").val(introductionInit);
+                        alert("修改信息出现问题.");
+                    }
+                }).fail(function () {
+                    $("#nickname").val(nicknameInit);
+                    $("#email").val(emailInit);
+                    $("#sexView").html(sexInit);
+                    $("#introduction").val(introductionInit);
+                    alert("修改信息出现问题.");
+                });
+            }
+        });
+    })
+</script>
+</body>
+</html>

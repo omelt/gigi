@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="eleven.lc.gigi.dao.UserCheckDao">
+    <select id="selectById" parameterType="String" resultType="eleven.lc.gigi.entity.UserCheck">
+        SELECT * FROM userCheck WHERE id=#{id}
+    </select>
+    <select id="selectByUsername" parameterType="String" resultType="eleven.lc.gigi.entity.UserCheck">
+        SELECT * FROM userCheck WHERE username=#{username}
+    </select>
+    <insert id="insertUserCheck" parameterType="eleven.lc.gigi.entity.UserCheck">
+        INSERT INTO userCheck(id,email,nickname,username,password,date)
+        VALUES (#{id},#{email},#{nickname},#{username},#{password},adddate(NOW(),INTERVAL 1 DAY))
+    </insert>
+    
+    <delete id="deleteUserCheck" parameterType="String">
+        delete from `userCheck` where id=#{id};
+    </delete>
+</mapper>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+<head th:replace="base::baseHead('Home')"></head>
+
+<body>
+
+<header th:replace="base::baseNav"></header>
+
+<div id="page-content" class="index-page">
+    <div class="container">
+        <div class="row">
+            <div class="featured">
+                <div class="sub-vid">
+                    <div class="col-md-6">
+                        <div class="zoom-container">
+                            <div class="zoom-caption">
+                                <span th:text="${videoHeadList[0].type}"></span>
+                                <a target='_blank' th:href="@{'/play/'+${videoHeadList[0].id}}">
+                                    <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                                </a>
+                                <p th:text="${videoHeadList[0].title}"></p>
+                            </div>
+                            <img th:src="${videoHeadList[0].preview}">
+                        </div>
+                    </div>
+                </div>
+                <div class="sub-vid">
+                    <div class="col-md-3" th:each="i:${#numbers.sequence(1,2)}">
+                        <div class="zoom-container">
+                            <div class="zoom-caption">
+                                <span th:text="${videoHeadList[(i*2)-1].type}"></span>
+                                <a target='_blank' th:href="@{'/play/'+${videoHeadList[(i*2)-1].id}}">
+                                    <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                                </a>
+                                <p th:text="${videoHeadList[(i*2)-1].title}"></p>
+                            </div>
+                            <img th:src="${videoHeadList[(i*2)-1].preview}">
+                        </div>
+                        <div class="zoom-container">
+                            <div class="zoom-caption">
+                                <span th:text="${videoHeadList[(i*2)].title}"></span>
+                                <a target='_blank' th:href="@{'/play/'+${videoHeadList[i*2].id}}">
+                                    <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                                </a>
+                                <p th:text="${videoHeadList[(i*2)].title}"></p>
+                            </div>
+                            <img th:src="${videoHeadList[(i*2)].preview}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="clear"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div id="main-content" class="col-md-9">
+                <div class="box">
+                    <div class="box-header">
+                        <h2><i class="fa fa-globe"></i> Featured Videos</h2>
+                    </div>
+                    <div class="box-content">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="wrap-vid">
+                                    <div class="zoom-container">
+                                        <div class="zoom-caption">
+                                            <span th:text="${videoFeaturedList[0].type}"></span>
+                                            <a target='_blank' th:href="@{'/play/'+${videoFeaturedList[0].id}}">
+                                                <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                                            </a>
+                                            <p th:text="${videoFeaturedList[0].title}"></p>
+                                        </div>
+                                        <img th:src="${videoFeaturedList[0].preview}">
+                                    </div>
+                                    <h3 class="vid-name"><a target='_blank' href="#" th:text="${videoFeaturedList[0].title}"></a></h3>
+                                    <div class="info">
+                                        <h5>By <a target='_blank' href="#" th:text="${videoFeaturedList[0].publisher.nickname}"></a></h5>
+                                        <span>
+                                            <i class="fa fa-calendar"></i>
+                                            <span th:text="${#dates.format(videoFeaturedList[0].date,'yyyy-MM-dd HH:mm:ss')}"></span>
+
+                                        </span>
+                                        <span>
+                                            <i class="fa fa-heart"></i>
+                                            <span th:text="${videoFeaturedList[0].goods}"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <p class="more" th:text="${videoFeaturedList[0].introduction}"></p>
+                                <a target='_blank' th:href="@{'/play/'+${videoFeaturedList[0].id}}"
+                                   class="btn btn-1">Read More</a>
+                                <div class="line"></div>
+                                <div class="post wrap-vid" th:each="i:${#numbers.sequence(1,3)}">
+                                    <div class="zoom-container">
+                                        <div class="zoom-caption">
+                                            <span th:text="${videoFeaturedList[i].type}"></span>
+                                            <a target='_blank' th:href="@{'/play/'+${videoFeaturedList[i].id}}">
+                                                <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                                            </a>
+                                            <p>Video's Name</p>
+                                        </div>
+                                        <img th:src="${videoFeaturedList[i].preview}">
+                                    </div>
+                                    <div class="wrapper">
+                                        <h5 class="vid-name"><a target='_blank' href="#" th:text="${videoFeaturedList[i].title}"></a></h5>
+                                        <div class="info">
+                                            <h6>By <a target='_blank' href="#" th:text="${videoFeaturedList[i].publisher.nickname}"></a></h6>
+                                            <span><i class="fa fa-calendar"></i><span style="display: inline" th:text="${#dates.format(videoFeaturedList[i].date,'yyyy-MM-dd HH:mm:ss')}"></span></span>
+                                            <span><i class="fa fa-heart"></i><span style="display: inline" th:text="${videoFeaturedList[i].goods}"></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="wrap-vid">
+                                    <div class="zoom-container">
+                                        <div class="zoom-caption">
+                                            <span th:text="${videoFeaturedList[4].type}"></span>
+                                            <a target='_blank' th:href="@{'/play/'+${videoFeaturedList[4].id}}">
+                                                <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                                            </a>
+                                            <p th:text="${videoFeaturedList[4].title}"></p>
+                                        </div>
+                                        <img th:src="${videoFeaturedList[4].preview}">
+                                    </div>
+                                    <h3 class="vid-name"><a target='_blank' href="#" th:text="${videoFeaturedList[4].title}"></a></h3>
+                                    <div class="info">
+                                        <h5>By <a target='_blank' href="#" th:text="${videoFeaturedList[4].publisher.nickname}"></a></h5>
+                                        <span>
+                                            <i class="fa fa-calendar"></i>
+                                            <span th:text="${#dates.format(videoFeaturedList[4].date,'yyyy-MM-dd HH:mm:ss')}"></span>
+
+                                        </span>
+                                        <span>
+                                            <i class="fa fa-heart"></i>
+                                            <span th:text="${videoFeaturedList[4].goods}"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <p class="more" th:text="${videoFeaturedList[4].introduction}"></p>
+                                <a target='_blank' th:href="@{'/play/'+${videoFeaturedList[4].id}}"
+                                   class="btn btn-1">Read More</a>
+                                <div class="line"></div>
+                                <div class="post wrap-vid" th:each="i:${#numbers.sequence(5,7)}">
+                                    <div class="zoom-container">
+                                        <div class="zoom-caption">
+                                            <span th:text="${videoFeaturedList[i].type}"></span>
+                                            <a target='_blank' th:href="@{'/play/'+${videoFeaturedList[i].id}}">
+                                                <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                                            </a>
+                                            <p>Video's Name</p>
+                                        </div>
+                                        <img th:src="${videoFeaturedList[i].preview}">
+                                    </div>
+                                    <div class="wrapper">
+                                        <h5 class="vid-name"><a target='_blank' href="#" th:text="${videoFeaturedList[i].title}"></a></h5>
+                                        <div class="info">
+                                            <h6>By <a target='_blank' href="#" th:text="${videoFeaturedList[i].publisher.nickname}"></a></h6>
+                                            <span><i class="fa fa-calendar"></i><span style="display: inline" th:text="${#dates.format(videoFeaturedList[i].date,'yyyy-MM-dd HH:mm:ss')}"></span></span>
+                                            <span><i class="fa fa-heart"></i><span style="display: inline" th:text="${videoFeaturedList[i].goods}"></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="line"></div>
+                </div>
+                <div class="box">
+                    <div class="box-header">
+                        <h2><i class="fa fa-play-circle-o"></i> Random Videos</h2>
+                    </div>
+                    <div class="box-content">
+                        <div class="row">
+                            <div class="col-md-4" th:each="video:${videoRandomList}">
+                                <div class="wrap-vid">
+                                    <div class="zoom-container">
+                                        <div class="zoom-caption">
+                                            <span th:text="${video.tags}"></span>
+                                            <a target='_blank' th:href="@{'/play/'+${video.id}}">
+                                                <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                                            </a>
+                                            <p th:text="${video.title}"> </p>
+                                        </div>
+                                        <img th:src="${video.preview}">
+                                    </div>
+                                    <h3 class="vid-name"><a target='_blank' href="#" th:text="${video.title}"></a></h3>
+                                    <div class="info">
+                                        <h5>By <a target='_blank' href="#" th:text="${video.publisher.nickname}"></a></h5>
+                                        <span><i class="fa fa-calendar"></i><span style="display:inline;" th:text="${#dates.format(video.date,'yyyy-MM-dd HH:mm:ss')}"></span></span>
+                                        <span><i class="fa fa-heart"></i><span style="display: inline" th:text="${video.goods}"></span></span>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="line"></div>
+                </div>
+                <div class="box">
+                    <div class="box-header">
+                        <h2><i class="fa fa-globe"></i> Hot Videos</h2>
+                    </div>
+                    <div class="box-content">
+                        <div class="row">
+
+                            <div class="col-md-6">
+                                <div class="wrap-vid">
+                                    <div class="zoom-container">
+                                        <div class="zoom-caption">
+                                            <span th:text="${videoHotList[0].type}"></span>
+                                            <a target='_blank' href="http://www.jq22.com/demo/jQueryvideomoban201702190044/single.html">
+                                                <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                                            </a>
+                                            <p th:text="${videoHotList[0].title}"></p>
+                                        </div>
+                                        <img th:src="${videoHotList[0].preview}">
+                                    </div>
+                                    <h3 class="vid-name"><a target='_blank' href="#" th:text="${videoHotList[0].title}"></a></h3>
+                                    <div class="info">
+                                        <h5>By <a target='_blank' href="#" th:text="${videoHotList[0].publisher.nickname}"></a></h5>
+                                        <span>
+                                            <i class="fa fa-calendar"></i>
+                                            <span th:text="${#dates.format(videoHotList[0].date,'yyyy-MM-dd HH:mm:ss')}"></span>
+
+                                        </span>
+                                        <span>
+                                            <i class="fa fa-heart"></i>
+                                            <span th:text="${videoHotList[0].goods}"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <p class="more" th:text="${videoHotList[0].introduction}"></p>
+                                <a target='_blank' href="http://www.jq22.com/demo/jQueryvideomoban201702190044/single.html"
+                                   class="btn btn-1">Read More</a>
+                            </div>
+                            <div class="col-md-6" th:each="i:${#numbers.sequence(1,4)}">
+                                <div class="post wrap-vid">
+                                    <div class="zoom-container">
+                                        <div class="zoom-caption">
+                                            <span th:text="${videoHotList[i].type}"></span>
+                                            <a target='_blank' href="http://www.jq22.com/demo/jQueryvideomoban201702190044/single.html">
+                                                <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                                            </a>
+                                            <p th:text="${videoHotList[i].title}"></p>
+                                        </div>
+                                        <img th:src="${videoHotList[i].preview}">
+                                    </div>
+                                    <div class="wrapper">
+                                        <h5 class="vid-name"><a target='_blank' href="#" th:text="${videoHotList[i].title}"></a></h5>
+                                        <div class="info">
+                                            <h6>By <a target='_blank' href="#" th:text="${videoHotList[i].publisher.nickname}"></a></h6>
+                                            <span><i class="fa fa-calendar"></i><span style="display: inline" th:text="${#dates.format(videoHotList[i].date,'yyyy-MM-dd HH:mm:ss')}"></span></span>
+                                            <span><i class="fa fa-heart"></i><span style="display: inline" th:text="${videoHotList[i].goods}"></span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="line"></div>
+                </div>
+                <div class="box">
+                    <div class="box-header">
+                        <h2><i class="fa fa-vimeo-square"></i> New Videos</h2>
+                    </div>
+                    <div class="box-content">
+                        <div class="row">
+                            <div class="col-md-4" th:each="video:${videoDateList}">
+                                <div class="wrap-vid">
+                                    <div class="zoom-container">
+                                        <div class="zoom-caption">
+                                            <span th:text="${video.type}"></span>
+                                            <a target='_blank' th:href="@{'/play/'+${video.id}}"    >
+                                                <i class="fa fa-play-circle-o fa-5x" style="color: #fff"></i>
+                                            </a>
+                                            <p th:text="${video.title}"></p>
+                                        </div>
+                                        <img th:src="${video.preview}">
+                                    </div>
+                                    <h3 class="vid-name"><a target='_blank' href="#" th:text="${video.title}"></a></h3>
+                                    <div class="info">
+                                        <h5>By <a target='_blank' href="#" th:text="${video.publisher.nickname}"></a></h5>
+                                        <span><i class="fa fa-calendar"></i><span style="display: inline" th:text="${#dates.format(video.date,'yyyy-MM-dd HH:mm:ss')}"></span></span>
+                                        <span><i class="fa fa-heart"></i><span style="display: inline" th:text="${video.goods}"></span> </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:replace="base::sidebar"></div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="base::baseFooter"></footer>
+
+</body>
+</html>
